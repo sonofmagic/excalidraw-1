@@ -21,7 +21,6 @@ import { LibraryButton } from "./LibraryButton";
 type MobileMenuProps = {
   appState: AppState;
   actionManager: ActionManager;
-  renderJSONExportDialog: () => React.ReactNode;
   renderImageExportDialog: () => React.ReactNode;
   setAppState: React.Component<any, AppState>["setState"];
   elements: readonly NonDeletedExcalidrawElement[];
@@ -45,7 +44,6 @@ export const MobileMenu = ({
   elements,
   libraryMenu,
   actionManager,
-  renderJSONExportDialog,
   renderImageExportDialog,
   setAppState,
   onCollabButtonClick,
@@ -123,7 +121,6 @@ export const MobileMenu = ({
     if (viewModeEnabled) {
       return (
         <>
-          {renderJSONExportDialog()}
           {renderImageExportDialog()}
         </>
       );
@@ -132,7 +129,6 @@ export const MobileMenu = ({
       <>
         {actionManager.renderAction("clearCanvas")}
         {actionManager.renderAction("loadScene")}
-        {renderJSONExportDialog()}
         {renderImageExportDialog()}
         {onCollabButtonClick && (
           <CollabButton

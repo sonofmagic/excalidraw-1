@@ -246,6 +246,7 @@ export const ColorPicker = ({
   label,
   isActive,
   setActive,
+  top,
 }: {
   type: "canvasBackground" | "elementBackground" | "elementStroke";
   color: string | null;
@@ -253,6 +254,7 @@ export const ColorPicker = ({
   label: string;
   isActive: boolean;
   setActive: (active: boolean) => void;
+  top?: number;
 }) => {
   const pickerButton = React.useRef<HTMLButtonElement>(null);
 
@@ -265,18 +267,12 @@ export const ColorPicker = ({
           style={color ? { "--swatch-color": color } : undefined}
           onClick={() => setActive(!isActive)}
           ref={pickerButton}
-        />
-        <ColorInput
-          color={color}
-          label={label}
-          onChange={(color) => {
-            onChange(color);
-          }}
+          title={t("labels.background")}
         />
       </div>
       <React.Suspense fallback="">
         {isActive ? (
-          <Popover
+          <Popover top={top}
             onCloseRequest={(event) =>
               event.target !== pickerButton.current && setActive(false)
             }

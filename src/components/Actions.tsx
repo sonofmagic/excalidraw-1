@@ -107,16 +107,6 @@ export const SelectedShapeActions = ({
 
       {renderAction("changeOpacity")}
 
-      <fieldset>
-        <legend>{t("labels.layers")}</legend>
-        <div className="buttonList">
-          {renderAction("sendToBack")}
-          {renderAction("sendBackward")}
-          {renderAction("bringToFront")}
-          {renderAction("bringForward")}
-        </div>
-      </fieldset>
-
       {targetElements.length > 1 && (
         <fieldset>
           <legend>{t("labels.align")}</legend>
@@ -175,43 +165,56 @@ export const ShapesSwitcher = ({
   elementType: ExcalidrawElement["type"];
   setAppState: React.Component<any, AppState>["setState"];
   onImageAction: (data: { pointerType: PointerType | null }) => void;
-}) => (
-  <>
-    {SHAPES.map(({ value, icon, key }, index) => {
-      const label = t(`toolBar.${value}`);
-      const letter = key && (typeof key === "string" ? key : key[0]);
-      const shortcut = letter
-        ? `${capitalizeString(letter)} ${t("helpDialog.or")} ${index + 1}`
-        : `${index + 1}`;
-      return (
-        <ToolButton
-          className="Shape"
-          key={value}
-          type="radio"
-          icon={icon}
-          checked={elementType === value}
-          name="editor-current-shape"
-          title={`${capitalizeString(label)} — ${shortcut}`}
-          keyBindingLabel={`${index + 1}`}
-          aria-label={capitalizeString(label)}
-          aria-keyshortcuts={shortcut}
-          data-testid={value}
-          onChange={({ pointerType }) => {
-            setAppState({
-              elementType: value,
-              multiElement: null,
-              selectedElementIds: {},
-            });
-            setCursorForShape(canvas, value);
-            if (value === "image") {
-              onImageAction({ pointerType });
-            }
-          }}
-        />
-      );
-    })}
-  </>
-);
+}) => {
+  const isPractitioner   = true;
+  const practitionerToolOnly = [
+      "rectangle",
+      "diamond",
+      "ellipse",
+      "arrow",
+      "line",
+  ]
+
+  return (
+      <>
+        {SHAPES.map(({value, icon, key}, index) => {
+          const label = t(`toolBar.${value}`);
+          const letter = key && (typeof key === "string" ? key : key[0]);
+          const shortcut = letter
+              ? `${capitalizeString(letter)} ${t("helpDialog.or")} ${index + 1}`
+              : `${index + 1}`;
+
+          if (practitionerToolOnly.includes(value) && !isPractitioner)  return;
+          return (
+              <ToolButton
+                  className="Shape"
+                  key={value}
+                  type="radio"
+                  icon={icon}
+                  checked={elementType === value}
+                  name="editor-current-shape"
+                  title={`${capitalizeString(label)} — ${shortcut}`}
+                  keyBindingLabel={`${index + 1}`}
+                  aria-label={capitalizeString(label)}
+                  aria-keyshortcuts={shortcut}
+                  data-testid={value}
+                  onChange={({pointerType}) => {
+                    setAppState({
+                      elementType: value,
+                      multiElement: null,
+                      selectedElementIds: {},
+                    });
+                    setCursorForShape(canvas, value);
+                    if (value === "image") {
+                      onImageAction({pointerType});
+                    }
+                  }}
+              />
+          );
+        })}
+      </>
+  )
+};
 
 export const ZoomActions = ({
   renderAction,

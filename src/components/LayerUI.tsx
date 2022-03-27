@@ -1,4 +1,5 @@
 import clsx from "clsx";
+
 import React, { useCallback } from "react";
 import { ActionManager } from "../actions/manager";
 import { CLASSES } from "../constants";
@@ -13,7 +14,7 @@ import { AppProps, AppState, ExcalidrawProps, BinaryFiles } from "../types";
 import { muteFSAbortError } from "../utils";
 import { SelectedShapeActions, ShapesSwitcher, ZoomActions } from "./Actions";
 import { BackgroundPickerAndDarkModeToggle } from "./BackgroundPickerAndDarkModeToggle";
-import CollabButton from "./CollabButton";
+
 import { ErrorDialog } from "./ErrorDialog";
 import { ExportCB, ImageExportDialog } from "./ImageExportDialog";
 import { FixedSideContainer } from "./FixedSideContainer";
@@ -21,7 +22,7 @@ import { HintViewer } from "./HintViewer";
 import { Island } from "./Island";
 import "./LayerUI.scss";
 import { LoadingMessage } from "./LoadingMessage";
-import { LockButton } from "./LockButton";
+
 import { MobileMenu } from "./MobileMenu";
 import { PasteChartDialog } from "./PasteChartDialog";
 import { Section } from "./Section";
@@ -30,10 +31,13 @@ import Stack from "./Stack";
 import { Tooltip } from "./Tooltip";
 import { UserList } from "./UserList";
 import Library from "../data/library";
-import { JSONExportDialog } from "./JSONExportDialog";
-import { LibraryButton } from "./LibraryButton";
+
 import { isImageFileHandle } from "../data/blob";
 import { LibraryMenu } from "./LibraryMenu";
+
+import Grid4x4Icon from "@mui/icons-material/Grid4x4";
+import {ToolButton} from "./ToolButton";
+
 
 interface LayerUIProps {
   actionManager: ActionManager;
@@ -92,22 +96,6 @@ const LayerUI = ({
 }: LayerUIProps) => {
   const isMobile = useIsMobile();
 
-  const renderJSONExportDialog = () => {
-    if (!UIOptions.canvasActions.export) {
-      return null;
-    }
-
-    return (
-      <JSONExportDialog
-        elements={elements}
-        appState={appState}
-        files={files}
-        actionManager={actionManager}
-        exportOpts={UIOptions.canvasActions.export}
-        canvas={canvas}
-      />
-    );
-  };
 
   const renderImageExportDialog = () => {
     if (!UIOptions.canvasActions.saveAsImage) {
@@ -159,68 +147,6 @@ const LayerUI = ({
   const Separator = () => {
     return <div style={{ width: ".625em" }} />;
   };
-
-  const renderViewModeCanvasActions = () => {
-    return (
-      <Section
-        heading="canvasActions"
-        className={clsx("zen-mode-transition", {
-          "transition-left": zenModeEnabled,
-        })}
-      >
-        {/* the zIndex ensures this menu has higher stacking order,
-         see https://github.com/excalidraw/excalidraw/pull/1445 */}
-        <Island padding={2} style={{ zIndex: 1 }}>
-          <Stack.Col gap={4}>
-            <Stack.Row gap={1} justifyContent="space-between">
-              {renderJSONExportDialog()}
-              {renderImageExportDialog()}
-            </Stack.Row>
-          </Stack.Col>
-        </Island>
-      </Section>
-    );
-  };
-
-  const renderCanvasActions = () => (
-    <Section
-      heading="canvasActions"
-      className={clsx("zen-mode-transition", {
-        "transition-left": zenModeEnabled,
-      })}
-    >
-      {/* the zIndex ensures this menu has higher stacking order,
-         see https://github.com/excalidraw/excalidraw/pull/1445 */}
-      <Island padding={2} style={{ zIndex: 1 }}>
-        <Stack.Col gap={4}>
-          <Stack.Row gap={1} justifyContent="space-between">
-            {actionManager.renderAction("clearCanvas")}
-            <Separator />
-            {actionManager.renderAction("loadScene")}
-            {renderJSONExportDialog()}
-            {renderImageExportDialog()}
-            <Separator />
-            {onCollabButtonClick && (
-              <CollabButton
-                isCollaborating={isCollaborating}
-                collaboratorCount={appState.collaborators.size}
-                onClick={onCollabButtonClick}
-              />
-            )}
-          </Stack.Row>
-          <BackgroundPickerAndDarkModeToggle
-            actionManager={actionManager}
-            appState={appState}
-            setAppState={setAppState}
-            showThemeBtn={showThemeBtn}
-          />
-          {appState.fileHandle && (
-            <>{actionManager.renderAction("saveToActiveFile")}</>
-          )}
-        </Stack.Col>
-      </Island>
-    </Section>
-  );
 
   const renderSelectedShapeActions = () => (
     <Section
@@ -296,9 +222,6 @@ const LayerUI = ({
             gap={4}
             className={clsx({ "disable-pointerEvents": zenModeEnabled })}
           >
-            {viewModeEnabled
-              ? renderViewModeCanvasActions()
-              : renderCanvasActions()}
             {shouldRenderSelectedShapeActions && renderSelectedShapeActions()}
           </Stack.Col>
           {!viewModeEnabled && (
@@ -306,12 +229,6 @@ const LayerUI = ({
               {(heading) => (
                 <Stack.Col gap={4} align="start">
                   <Stack.Row gap={1}>
-                    <LockButton
-                      zenModeEnabled={zenModeEnabled}
-                      checked={appState.elementLocked}
-                      onChange={onLockToggle}
-                      title={t("toolBar.lock")}
-                    />
                     <Island
                       padding={1}
                       className={clsx({ "zen-mode": zenModeEnabled })}
@@ -329,16 +246,17 @@ const LayerUI = ({
                           setAppState={setAppState}
                           onImageAction={({ pointerType }) => {
                             onImageAction({
-                              insertOnCanvasDirectly: pointerType !== "mouse",
+                              insertOnCanvasDirectly: true,
                             });
                           }}
                         />
+                        {renderImageExportDialog()}
+                        {actionManager.renderAction("undo")}
+                        {actionManager.renderAction("redo")}
+                        {actionManager.renderAction("clearCanvas")}
+
                       </Stack.Row>
                     </Island>
-                    <LibraryButton
-                      appState={appState}
-                      setAppState={setAppState}
-                    />
                   </Stack.Row>
                   {libraryMenu}
                 </Stack.Col>
@@ -377,6 +295,14 @@ const LayerUI = ({
   };
 
   const renderBottomAppMenu = () => {
+    const toggleGridAction = () => {
+      if(!appState.gridSize) {
+        setAppState({gridSize: 20});
+      } else {
+        setAppState({gridSize: null});
+      }
+    }
+
     return (
       <footer
         role="contentinfo"
@@ -394,21 +320,27 @@ const LayerUI = ({
             <Section heading="canvasActions">
               <Island padding={1}>
                 <ZoomActions
-                  renderAction={actionManager.renderAction}
-                  zoom={appState.zoom}
+                    renderAction={actionManager.renderAction}
+                    zoom={appState.zoom}
                 />
               </Island>
-              {!viewModeEnabled && (
-                <div
-                  className={clsx("undo-redo-buttons zen-mode-transition", {
-                    "layer-ui__wrapper__footer-left--transition-bottom":
-                      zenModeEnabled,
-                  })}
-                >
-                  {actionManager.renderAction("undo", { size: "small" })}
-                  {actionManager.renderAction("redo", { size: "small" })}
-                </div>
-              )}
+              <Separator/>
+              <BackgroundPickerAndDarkModeToggle
+                  actionManager={actionManager}
+                  appState={appState}
+                  setAppState={setAppState}
+                  showThemeBtn={false}
+              />
+              <Separator/>
+              <ToolButton
+                  type="button"
+                  icon={<Grid4x4Icon/>}
+                  aria-label={t("labels.showGrid")}
+                  onClick={toggleGridAction}
+                  size={"small"}
+                  title={t("labels.showGrid")}
+              />
+              {actionManager.renderAction("gridMode")}
             </Section>
           </Stack.Col>
         </div>
@@ -484,7 +416,6 @@ const LayerUI = ({
         elements={elements}
         actionManager={actionManager}
         libraryMenu={libraryMenu}
-        renderJSONExportDialog={renderJSONExportDialog}
         renderImageExportDialog={renderImageExportDialog}
         setAppState={setAppState}
         onCollabButtonClick={onCollabButtonClick}

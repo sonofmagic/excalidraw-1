@@ -487,15 +487,6 @@ class App extends React.Component<AppProps, AppState> {
             />
             <div className="excalidraw-textEditorContainer" />
             <div className="excalidraw-contextMenuContainer" />
-            {this.state.showStats && (
-              <Stats
-                appState={this.state}
-                setAppState={this.setAppState}
-                elements={this.scene.getElements()}
-                onClose={this.toggleStats}
-                renderCustomStats={renderCustomStats}
-              />
-            )}
             {this.state.toastMessage !== null && (
               <Toast
                 message={this.state.toastMessage}
@@ -1471,13 +1462,6 @@ class App extends React.Component<AppProps, AppState> {
 
   toggleZenMode = () => {
     this.actionManager.executeAction(actionToggleZenMode);
-  };
-
-  toggleStats = () => {
-    if (!this.state.showStats) {
-      trackEvent("dialog", "stats");
-    }
-    this.actionManager.executeAction(actionToggleStats);
   };
 
   scrollToContent = (
@@ -4729,7 +4713,7 @@ class App extends React.Component<AppProps, AppState> {
         typeof this.props.zenModeEnabled === "undefined" && actionToggleZenMode,
         typeof this.props.viewModeEnabled === "undefined" &&
           actionToggleViewMode,
-        actionToggleStats,
+
       ];
 
       if (this.state.viewModeEnabled) {
@@ -4773,7 +4757,6 @@ class App extends React.Component<AppProps, AppState> {
               actionToggleZenMode,
             typeof this.props.viewModeEnabled === "undefined" &&
               actionToggleViewMode,
-            actionToggleStats,
           ],
           top,
           left,

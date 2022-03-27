@@ -163,7 +163,6 @@ const ImageExportModal = ({
               {t("labels.onlySelected")}
             </CheckboxItem>
           )}
-          {actionManager.renderAction("changeExportEmbedScene")}
         </div>
       </div>
       <div style={{ display: "flex", alignItems: "center", marginTop: ".6em" }}>
