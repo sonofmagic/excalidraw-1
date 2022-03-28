@@ -629,6 +629,7 @@ const ExcalidrawWrapper = () => {
   return (
     <>
       <Excalidraw
+        // @ts-ignore
         ref={excalidrawRefCallback}
         onChange={onChange}
         initialData={initialStatePromiseRef.current.promise}
@@ -639,6 +640,7 @@ const ExcalidrawWrapper = () => {
           canvasActions: {
             export: {
               onExportToBackend,
+              // @ts-ignore
               renderCustomUI: (elements, appState, files) => {
                 return (
                   <ExportToExcalidrawPlus

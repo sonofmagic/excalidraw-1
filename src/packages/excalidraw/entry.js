@@ -1,6 +1,6 @@
-import Excalidraw from "./index";
+import ExcalidrawApp from "./index";
 
 import "../../../public/fonts.css";
 
-export default Excalidraw;
+export default ExcalidrawApp;
 export * from "./index";

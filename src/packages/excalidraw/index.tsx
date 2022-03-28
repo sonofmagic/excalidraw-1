@@ -3,7 +3,7 @@ import "./publicPath";
 
 import { InitializeApp } from "../../components/InitializeApp";
 import App from "../../components/App";
-
+import ExcalidrawApp from "../../excalidraw-app";
 import "../../css/app.scss";
 import "../../css/styles.scss";
 
@@ -168,7 +168,11 @@ const forwardedRefComp = forwardRef<
   ExcalidrawAPIRefValue,
   PublicExcalidrawProps
 >((props, ref) => <Excalidraw {...props} excalidrawRef={ref} />);
-export default React.memo(forwardedRefComp, areEqual);
+
+export const ExcalidrawCom = React.memo(forwardedRefComp, areEqual);
+
+export default ExcalidrawApp;
+
 export {
   getSceneVersion,
   getElementMap,

@@ -95,6 +95,7 @@ interface Props {
 
 const {
   Context: CollabContext,
+  // @ts-ignore
   Consumer: CollabContextConsumer,
   Provider: CollabContextProvider,
 } = createInverseContext<{ api: CollabAPI | null }>({ api: null });
